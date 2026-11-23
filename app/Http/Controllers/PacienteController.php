@@ -41,7 +41,14 @@ class PacienteController extends Controller
 
     public function show(Paciente $paciente)
     {
-        //
+        $paciente->load([
+            'citas'      => fn ($q) => $q->with('personalMedico')
+                                         ->orderByDesc('fecha_hora'),
+            'atenciones' => fn ($q) => $q->with('cita.personalMedico')
+                                         ->orderByDesc('atenciones.created_at'),
+        ]);
+
+        return view('pacientes.show', compact('paciente'));
     }
 
     public function edit(Paciente $paciente)
